@@ -6,6 +6,17 @@ x= open ("/home/spidey/Downloads/1ltx.pdb", "r" ).readlines()
 #creating a output file for write purpose
 outfile = open("outputfile.txt", "w")
 
+# a loop to extract the lines starts with ATOM
+for i in range(len(x)):
+	line = x[i].strip() #striping for new line charachter repeatation
+	if (line[:2] == "AT"):
+		outfile.write(line+ "\n") #writing in output file after removal of additional new line charachter
+#close the file
+outfile.close()
+
+# open the extracted file only for read purpose and read it line by line
+y= open ("/home/spidey/outputfile.txt", "r").readlines()
+
 #initialise the count of atoms as zero
 count_of_C = 0 
 count_of_S = 0 
@@ -19,23 +30,22 @@ mass_of_C = 0
 mass_of_O = 0
 
 # starting a loop till range i.e. length of the file lines
-for i in range(len(x)):
-	line = x[i].strip() #striping for new line charachter repeatation
-	outfile.write(line+ "\n") #writing in output file after removal of additional new line charachter
-	if (line[:4]) == "ATOM": #checking if lines 0-4 match the charachter ATOM
-		if line [77] == "C": #checking if line 77 contains C
-			count_of_C +=1 #then add count to count_of_C
-			mass_of_C = mass_of_C + 12 #add mass_of_C
-		elif line [77] == "O": #checking if line 77 contains O
-			count_of_O +=1 #then add count to count_of_O
-			mass_of_O = mass_of_O + 16 #add mass_of_O
-		elif line [77] == "S": #checking if line 77 contains S
-			count_of_S +=1 #then add count to count_of_S
-			mass_of_S = mass_of_S + 32 #add mass_of_S
-		elif line [77] == "N": #checking if line 77 contains N
-			count_of_N +=1 #then add count to count_of_N
-			mass_of_N = mass_of_N + 14 #add mass_of_N
-			
+for i in range(len(y)):
+	line = y[i].strip()
+	if line [77] == "C": #checking if line 77 contains C
+		count_of_C +=1 #then add count to count_of_C
+		mass_of_C = mass_of_C + 12 #add mass_of_C
+	elif line [77] == "O": #checking if line 77 contains O
+		count_of_O +=1 #then add count to count_of_O
+		mass_of_O = mass_of_O + 16 #add mass_of_O
+	elif line [77] == "S": #checking if line 77 contains S
+		count_of_S +=1 #then add count to count_of_S
+		mass_of_S = mass_of_S + 32 #add mass_of_S
+	elif line [77] == "N": #checking if line 77 contains N
+		count_of_N +=1 #then add count to count_of_N
+		mass_of_N = mass_of_N + 14 #add mass_of_N
+	else :
+		continue		
 #calculate total no of atoms
 total_no_of_atoms = count_of_C + count_of_O + count_of_S + count_of_N
 
@@ -46,7 +56,7 @@ mass_of_protein = mass_of_N + mass_of_S + mass_of_C + mass_of_O
 print(f" C: {count_of_C} ,\n O :{count_of_O},\n S: {count_of_S},\n N: {count_of_N}")
 
 #print the total atoms and total mass
-print (f" total atoms : {total_no_of_atoms},\n mass:{mass_of_protein} Da")	
+print (f" total atoms and total no of amino acids: {total_no_of_atoms},\n mass:{mass_of_protein} Da")	
 
 
 # give the radius values by self		
@@ -72,8 +82,8 @@ total_volume  = (volume_of_C + volume_of_O + volume_of_S + volume_of_N )
 print (f" total_vol:{total_volume} Å") 
 
 charge_on_protein = 0
-for i in range(len(x)):
-	line = x[i].strip()
+for i in range(len(y)):
+	line = y[i].strip()
 	if line [17:20] == "LYS" :
 		charge_on_protein +=1
 	elif line [17:20] == "ARG" :
@@ -82,11 +92,10 @@ for i in range(len(x)):
 		charge_on_protein -=1
 	elif line [17:20] == "GLU":
 		charge_on_protein -=1
-	elif line[17:20] == "HIS": #histidine as taken 0.2 because its charge depend on the ph of the protein crystal i.e. 7.2 in case of 1ltx.pdb (+1 for ph<6 , 0.1 or 0.2 for ph ~ 7.0 ,0 for ph < 6 
+	elif line[17:20] == "HIS": #histidine as taken 0.2 because its charge depend on the ph of the protein crystal i.e. 7.2 in case of 1ltx.pdb (+1 for ph<6 , 0.1 or 0.2 for ph ~ 7.0 ,0 for ph > 6 )
 		charge_on_protein +=0.2
-		#print (len(line[17:20]))
-print(f"total charge on protein : {charge_on_protein}")
 
+print(f"total charge on protein : {charge_on_protein}")
 
 # calculate water molecule and total count of amino acids
 water= 0
@@ -94,13 +103,19 @@ lengthA = 0
 for i in range(len(x)):
 	line = x[i].strip()
 	if line[17:20] == "HOH":
-		water +=1
-	elif (not line[16:20].startswith("HOH") and
-	not any (char.isdigit() for char in line[16:20]) and
-	" " not in line[16:20] ): 
-		lengthA +=1
-print(f" total amino acids are : {lengthA}")
+		water +=1 
+
 print(f"water : {water}")	
-#print (length_A)
-#close the file
-outfile.close()
+
+
+#calculate the centroid
+cent_X =0
+cent_Y = 0
+cent_Z = 0
+
+for i in range(len(y)):
+	line = y[i].strip()
+	cent_X = cent_X + float(line[32:39])
+	cent_Y = cent_Y + float(line[40:47])
+	cent_Z = cent_Z + float(line[48:55])
+print(f" cent_X : {cent_X/total_no_of_atoms} ,\n cent_Y : {cent_Y/total_no_of_atoms}, \n cent_Z : {cent_Z/total_no_of_atoms} ")
