@@ -87,6 +87,8 @@ for i in range(len(x)):
 		#print (len(line[17:20]))
 print(f"total charge on protein : {charge_on_protein}")
 
+
+# calculate water molecule and total count of amino acids
 water= 0
 lengthA = 0
 for i in range(len(x)):
@@ -97,7 +99,7 @@ for i in range(len(x)):
 	not any (char.isdigit() for char in line[16:20]) and
 	" " not in line[16:20] ): 
 		lengthA +=1
-print(lengthA)
+print(f" total amino acids are : {lengthA}")
 print(f"water : {water}")	
 #print (length_A)
 #close the file
