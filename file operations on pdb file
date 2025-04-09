@@ -99,14 +99,12 @@ print(f"total charge on protein : {charge_on_protein}")
 
 # calculate water molecule and total count of amino acids
 water= 0
-lengthA = 0
 for i in range(len(x)):
 	line = x[i].strip()
-	if line[17:20] == "HOH":
+	if line[17:20] == "HOH": #accessing lines with HOH starting and counting
 		water +=1 
 
 print(f"water : {water}")	
-
 
 #calculate the centroid
 cent_X =0
@@ -115,7 +113,19 @@ cent_Z = 0
 
 for i in range(len(y)):
 	line = y[i].strip()
-	cent_X = cent_X + float(line[32:39])
-	cent_Y = cent_Y + float(line[40:47])
-	cent_Z = cent_Z + float(line[48:55])
+	if ((line[21] == "A") | (line[21] =="B")): #select line with A and B chains
+		cent_X = cent_X + float(line[32:39])
+		cent_Y = cent_Y + float(line[40:47])
+		cent_Z = cent_Z + float(line[48:55])
 print(f" cent_X : {cent_X/total_no_of_atoms} ,\n cent_Y : {cent_Y/total_no_of_atoms}, \n cent_Z : {cent_Z/total_no_of_atoms} ")
+
+amino_acids =set()
+for i in range(len(y)):
+    line = y[i].strip()
+    amino_acid_name = line[17:20]
+    amino_acid_no = line[22:26]
+    amino_details = (f" amino acids : {amino_acid_no} - {amino_acid_name}")
+    amino_acids.add(amino_details)
+
+for i in sorted(amino_acids):
+    print(i)
